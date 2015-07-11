@@ -8,7 +8,7 @@ module.exports = whoami;
 function whoami(opts, cb) {
   if ('function' === typeof opts) {
     cb = opts;
-    opts = {};
+    opts = null;
   }
 
   which('npm', callNpm);
@@ -22,9 +22,7 @@ function whoami(opts, cb) {
   }
 
   function handleResult(err, stdout, stderr) {
-    var old = cb;
-    cb = function() {};
-    old(err, stdout && stdout.trim());
+    cb(err, stdout && stdout.trim());
   }
 }
 
@@ -41,5 +39,5 @@ function makeCallConfig(opts, pathToNpm) {
   return {
     command: cmd,
     execOpts: {encoding: 'utf8', timeout: timeout}
-  }
+  };
 }
