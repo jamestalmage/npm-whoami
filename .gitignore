@@ -6,3 +6,4 @@
 /sandbox/
 /build/
 /sinopia
+test/fixture/npm-debug.log.*

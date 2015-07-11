@@ -30,19 +30,23 @@ describe('npm-whoami', function() {
   });
 
   function setup(username, timeout) {
-    /*if ('function' === typeof timeout) {
-      done = timeout;
-      timeout = 0;
-    } */
     childProcess.send({
       username: username,
       timeout: timeout || 0
     });
   }
 
+  function opts(timeout) {
+    var o = {registry: 'http://localhost:55550'};
+    if (timeout) {
+      o.timeout = timeout;
+    }
+    return o;
+  }
+
   it('jane.doe', function(done) {
     setup('jane.doe');
-    npmWhoami({registry: 'http://localhost:55550'}, function(err, result) {
+    npmWhoami(opts(), function(err, result) {
       assert.ifError(err);
       assert.equal(result, 'jane.doe');
       done();
@@ -51,7 +55,7 @@ describe('npm-whoami', function() {
 
   it('john.doe', function(done) {
     setup('john.doe');
-    npmWhoami({registry: 'http://localhost:55550'}, function(err, result) {
+    npmWhoami(opts(), function(err, result) {
       assert.ifError(err);
       assert.equal(result, 'john.doe');
       done();
@@ -60,7 +64,7 @@ describe('npm-whoami', function() {
 
   it('unauth - bad return value', function(done) {
     setup(null);
-    npmWhoami({registry: 'http://localhost:55550'}, function(err, result) {
+    npmWhoami(opts(), function(err, result) {
       assert(err);
       done();
     });
@@ -78,7 +82,7 @@ describe('npm-whoami', function() {
 
   it('long timeout - fails', function(done) {
     setup('james.talmage', 4000);
-    npmWhoami({timeout:3000, registry:'http://localhost:55550'}, function(err, result) {
+    npmWhoami(opts(3000), function(err, result) {
       assert(err);
       done();
     });
@@ -86,7 +90,7 @@ describe('npm-whoami', function() {
 
   it('long timeout - passes', function(done) {
     setup('james.talmage', 4000);
-    npmWhoami({timeout:5500, registry:'http://localhost:55550'}, function(err, result) {
+    npmWhoami(opts(5500), function(err, result) {
       assert.ifError(err);
       assert.equal('james.talmage', result);
       done();
@@ -106,6 +110,56 @@ describe('npm-whoami', function() {
     npmWhoami(function(err, result) {
       assert(err);
       done();
+    });
+  });
+
+  describe('sync', function() {
+    it('jane.doe', function() {
+      setup('jane.doe');
+      var name = npmWhoami.sync(opts());
+      assert.equal(name, 'jane.doe');
+    });
+
+    it('john.doe', function() {
+      setup('john.doe');
+      var name = npmWhoami.sync(opts());
+      assert.equal(name, 'john.doe');
+    });
+
+    it('unauth - bad return value', function() {
+      setup(null);
+      try {
+        npmWhoami.sync(opts());
+      } catch (e) {
+        return;
+      }
+      assert.fail('should have thrown');
+    });
+
+    it('unauth - not logged in', function() {
+      setup(null);
+      try {
+        npmWhoami.sync();
+      } catch (e) {
+        return;
+      }
+      assert.fail('should have thrown');
+    });
+
+    it('long timeout - fails', function() {
+      setup('james.talmage', 4000);
+      try {
+        npmWhoami.sync(opts(3000));
+      } catch (e) {
+        return;
+      }
+      assert.fail('should have thrown');
+    });
+
+    it('long timeout - passes', function() {
+      setup('james.talmage', 4000);
+      var name = npmWhoami.sync(opts(5500));
+      assert.equal('james.talmage', name);
     });
   });
 
