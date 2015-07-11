@@ -33,14 +33,10 @@ describe('npm-whoami', function() {
 
   beforeEach(function() {
     username = undefined;
+    process.chdir(path.resolve(__dirname, 'fixture'));
   });
 
-  function chdir(name) {
-    process.chdir(path.resolve(__dirname, 'fixture', name));
-  }
-
   it('jane.doe', function(done) {
-    chdir('jane');
     username = 'jane.doe';
     npmWhoami({registry: 'http://localhost:55550'}, function(err, result) {
       assert.ifError(err);
@@ -50,7 +46,6 @@ describe('npm-whoami', function() {
   });
 
   it('john.doe', function(done) {
-    chdir('john');
     username = 'john.doe';
     npmWhoami({registry: 'http://localhost:55550'}, function(err, result) {
       assert.ifError(err);
@@ -60,7 +55,6 @@ describe('npm-whoami', function() {
   });
 
   it('unauth - bad return value', function(done) {
-    chdir('unauth');
     npmWhoami({registry: 'http://localhost:55550'}, function(err, result) {
       assert(err);
       done();
@@ -68,7 +62,6 @@ describe('npm-whoami', function() {
   });
 
   it('unauth - not logged in', function(done) {
-    chdir('unauth');
     npmWhoami(function(err, result) {
       if (!err) {
         assert.fail('This test will fail if you are logged into npm: YOU ARE: '  + result);
@@ -77,7 +70,7 @@ describe('npm-whoami', function() {
     });
   });
 
-  it("can't find npm", function(done) {
+  it("can't find npm executable", function(done) {
     var npmWhoami = proxyquire('../', {
       which: function(name, cb) {
         assert.equal('npm', name);
