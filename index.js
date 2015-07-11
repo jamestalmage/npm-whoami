@@ -4,6 +4,8 @@ var execSync = require('child_process').execSync;
 var which = require('which');
 var assert = require('assert');
 
+var nodeVersion = parseInt(process.version.split('.')[1], 10);
+
 module.exports = whoami;
 module.exports.sync = sync;
 
@@ -29,6 +31,9 @@ function whoami(opts, cb) {
 }
 
 function sync(opts) {
+  if (nodeVersion < 11) {
+    throw new Error('npm-whoami: sync mode not supported on node v0.10 or earlier.');
+  }
   var callConfig = makeCallConfig(opts, which.sync('npm'));
   return execSync(callConfig.command, callConfig.execOpts).trim();
 }

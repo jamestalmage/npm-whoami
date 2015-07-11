@@ -38,6 +38,7 @@
     "jshint": "^2.8.0",
     "mkdirp": "^0.5.1",
     "mocha": "^2.2.5",
-    "proxyquire": "^1.6.0"
+    "proxyquire": "^1.6.0",
+    "semver": "^4.3.6"
   }
 }

@@ -4,6 +4,7 @@ var npmWhoami = require('../');
 var path = require('path');
 var proxyquire = require('proxyquire');
 var fork = require('child_process').fork;
+var semver = require('semver');
 
 describe('npm-whoami', function() {
   this.timeout(10000);
@@ -113,54 +114,56 @@ describe('npm-whoami', function() {
     });
   });
 
-  describe('sync', function() {
-    it('jane.doe', function() {
-      setup('jane.doe');
-      var name = npmWhoami.sync(opts());
-      assert.equal(name, 'jane.doe');
-    });
+  if (semver.gte(process.version, '0.11.0')) {
+    describe('sync', function() {
+      it('jane.doe', function() {
+        setup('jane.doe');
+        var name = npmWhoami.sync(opts());
+        assert.equal(name, 'jane.doe');
+      });
 
-    it('john.doe', function() {
-      setup('john.doe');
-      var name = npmWhoami.sync(opts());
-      assert.equal(name, 'john.doe');
-    });
+      it('john.doe', function() {
+        setup('john.doe');
+        var name = npmWhoami.sync(opts());
+        assert.equal(name, 'john.doe');
+      });
 
-    it('unauth - bad return value', function() {
-      setup(null);
-      try {
-        npmWhoami.sync(opts());
-      } catch (e) {
-        return;
-      }
-      assert.fail('should have thrown');
-    });
+      it('unauth - bad return value', function() {
+        setup(null);
+        try {
+          npmWhoami.sync(opts());
+        } catch (e) {
+          return;
+        }
+        assert.fail('should have thrown');
+      });
 
-    it('unauth - not logged in', function() {
-      setup(null);
-      try {
-        npmWhoami.sync();
-      } catch (e) {
-        return;
-      }
-      assert.fail('should have thrown');
-    });
+      it('unauth - not logged in', function() {
+        setup(null);
+        try {
+          npmWhoami.sync();
+        } catch (e) {
+          return;
+        }
+        assert.fail('should have thrown');
+      });
 
-    it('long timeout - fails', function() {
-      setup('james.talmage', 4000);
-      try {
-        npmWhoami.sync(opts(3000));
-      } catch (e) {
-        return;
-      }
-      assert.fail('should have thrown');
-    });
+      it('long timeout - fails', function() {
+        setup('james.talmage', 4000);
+        try {
+          npmWhoami.sync(opts(3000));
+        } catch (e) {
+          return;
+        }
+        assert.fail('should have thrown');
+      });
 
-    it('long timeout - passes', function() {
-      setup('james.talmage', 4000);
-      var name = npmWhoami.sync(opts(5500));
-      assert.equal('james.talmage', name);
+      it('long timeout - passes', function() {
+        setup('james.talmage', 4000);
+        var name = npmWhoami.sync(opts(5500));
+        assert.equal('james.talmage', name);
+      });
     });
-  });
+  }
 
 });
