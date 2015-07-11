@@ -16,7 +16,6 @@ function whoami(opts, cb) {
     if (err) {
       return cb(err);
     }
-    //var cmd = 'cd ' + process.cwd() + ' && ' + pathToNpm + ' whoami';
     var cmd = pathToNpm + ' whoami';
     if (opts.registry) {
       cmd += ' --registry ' + opts.registry;
