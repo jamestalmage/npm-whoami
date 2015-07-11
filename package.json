@@ -13,9 +13,9 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "rm -rf sinopia && npm run cover && npm run lint && npm run style",
+    "test": "npm run cover && npm run lint && npm run style",
     "cover": "istanbul cover ./node_modules/.bin/_mocha",
-    "debug": "rm -rf sinopia && mocha",
+    "debug": "mocha",
     "lint": "jshint *.js lib/*.js lib/**/*.js test/*.js test/**/*.js",
     "style": "jscs ./**/*.js && jscs ./test/** --config=./test/.jscsrc"
   },
