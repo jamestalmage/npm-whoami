@@ -32,12 +32,12 @@
   "devDependencies": {
     "codeclimate-test-reporter": "^0.1.0",
     "coveralls": "^2.11.2",
+    "express": "^4.13.1",
     "istanbul": "^0.3.17",
     "jscs": "^1.13.1",
     "jshint": "^2.8.0",
     "mkdirp": "^0.5.1",
     "mocha": "^2.2.5",
-    "proxyquire": "^1.6.0",
-    "sinopia": "^1.4.0"
+    "proxyquire": "^1.6.0"
   }
 }
