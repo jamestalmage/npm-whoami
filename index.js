@@ -12,7 +12,6 @@ function whoami(opts, cb) {
   }
   var timeout = opts.timeout || 10000;
   assert('number', typeof timeout, 'timeout');
-  var timeoutObject;
 
   which('npm', callNpm);
 
@@ -24,20 +23,12 @@ function whoami(opts, cb) {
     if (opts.registry) {
       cmd += ' --registry ' + opts.registry;
     }
-    exec(cmd, {encoding:'utf8'}, handleResult);
-    timeoutObject = setTimeout(function() {
-      timeoutObject = null;
-      handleResult(new Error(timeout + 'ms timeout exceeded'));
-    }, timeout);
+    exec(cmd, {encoding:'utf8', timeout:timeout}, handleResult);
   }
 
   function handleResult(err, stdout, stderr) {
     var old = cb;
     cb = function() {};
-    if (timeoutObject) {
-      clearTimeout(timeoutObject);
-      timeoutObject = null;
-    }
     old(err, stdout && stdout.trim());
   }
 }
