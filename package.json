@@ -1,0 +1,43 @@
+{
+  "name": "npm-whoami",
+  "version": "0.0.0",
+  "description": "My primo module",
+  "license": "MIT",
+  "repository": "jamestalmage/npm-whoami",
+  "author": {
+    "name": "James Talmage",
+    "email": "james@talmage.io",
+    "url": "github.com/jamestalmage"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "rm -rf sinopia && npm run cover && npm run lint && npm run style",
+    "cover": "istanbul cover ./node_modules/.bin/_mocha",
+    "debug": "rm -rf sinopia && mocha",
+    "lint": "jshint *.js lib/*.js lib/**/*.js test/*.js test/**/*.js",
+    "style": "jscs ./**/*.js && jscs ./test/** --config=./test/.jscsrc"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "npm",
+    "whoami"
+  ],
+  "dependencies": {
+    "which": "^1.1.1"
+  },
+  "devDependencies": {
+    "codeclimate-test-reporter": "^0.1.0",
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.17",
+    "jscs": "^1.13.1",
+    "jshint": "^2.8.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^2.2.5",
+    "proxyquire": "^1.6.0",
+    "sinopia": "^1.4.0"
+  }
+}
