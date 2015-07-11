@@ -33,14 +33,21 @@ Called with the npm username, or an error if it can not be found.
 
 #### options
 
-##### registry
+*Optional*
+Type: `object | string | number`
+
+If a `string`, it will be treated as the registry url.
+If a `number`, it will be used as the timeout value.
+You can pass an object hash if you need both values.
+
+##### options.registry
 
 *Optional*
 Type: `string`  
 
 Will use the `--registry` flag to set an alternate registry url.
        
-##### timeout
+##### options.timeout
 
 *Optional*
 Type: `number`  

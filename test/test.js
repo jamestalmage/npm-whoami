@@ -7,9 +7,11 @@ var fork = require('child_process').fork;
 var semver = require('semver');
 
 var REGISTRY = 'http://localhost:55550';
+var FIXTURE_DIR = path.resolve(__dirname, 'fixture');
 
 describe('npm-whoami', function() {
   this.timeout(10000);
+  this.slow(7000);
   var originalDirectory;
   var childProcess;
 
@@ -29,7 +31,7 @@ describe('npm-whoami', function() {
   });
 
   beforeEach(function() {
-    process.chdir(path.resolve(__dirname, 'fixture'));
+    process.chdir(FIXTURE_DIR);
   });
 
   function setup(username, timeout) {
@@ -100,6 +102,24 @@ describe('npm-whoami', function() {
     });
   });
 
+  runFork({
+    description: 'pass timeout as the only argument',
+    file: 'opts-as-number-pass-john.doe.js',
+    username: 'john.doe',
+    timeout: 4000,
+    code: 0,
+    expect: 'passed'
+  });
+
+  runFork({
+    description: 'pass timeout as the only argument - fails',
+    file: 'opts-as-number-fail.js',
+    username: 'james.talmage',
+    timeout: 4000,
+    code: 0,
+    expect: 'failed'
+  });
+
   it("can't find npm executable", function(done) {
     var npmWhoami = proxyquire('../', {
       which: function(name, cb) {
@@ -165,7 +185,75 @@ describe('npm-whoami', function() {
         var name = npmWhoami.sync(opts(5500));
         assert.equal('james.talmage', name);
       });
+
+      runFork({
+        description:'pass timeout as the only argument',
+        file:'sync-opts-as-number-pass-jane.doe.js',
+        username: 'jane.doe',
+        timeout: 4000,
+        code: 0,
+        expect: 'passed'
+      });
+
+      runFork({
+        description:'pass timeout as the only argument - fails',
+        file:'sync-opts-as-number-fail.js',
+        username: 'james.talmage',
+        timeout: 4000,
+        code: 0,
+        expect: 'failed'
+      });
     });
   }
 
+  // runs a test in a forked process.
+  // necessary for when we want to set registry url via `.npmrc`,
+  // instead of explicitly passing an argument.
+  function runFork(opts, exclusive) {
+    (exclusive ? it.only : it)(opts.description, function(_done) {
+      setup(opts.username, opts.timeout);
+      var message = 'no_message';
+      var mulitpleMessages = false;
+      var env = {};
+      for (var key in process.env) {
+        // Strip all the `npm_config*` environment variables out,
+        // or they will interfere with fixtures `.npmrc` file
+        if (process.env.hasOwnProperty(key) && !/^npm_config/i.test(key)) {
+          env[key] = process.env[key];
+        }
+      }
+      env.HOME = FIXTURE_DIR;
+      var forkedTest = fork(
+        __dirname + '/forked-tests/' + opts.file,
+        [],
+        {
+          env: env,
+          cwd: FIXTURE_DIR
+        });
+
+      forkedTest.on('message', function(m) {
+        if (mulitpleMessages) {
+          _done(new Error('received multiple messages'));
+        }
+        mulitpleMessages = true;
+        message = m;
+      });
+
+      forkedTest.on('exit', function(code) {
+        assert.equal(opts.code, code);
+        assert.equal(opts.expect, message);
+        _done();
+      });
+    });
+  }
+
+  /* jshint ignore:start */
+  function xrunFork(opts) {
+    xit(opts.description);
+  }
+  /* jshint ignore:end */
+
+  runFork.only = function(opts) {
+    runFork(opts, true);
+  };
 });

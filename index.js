@@ -41,8 +41,7 @@ function sync(opts) {
 
 function makeCallConfig(opts, pathToNpm) {
   opts = opts || {};
-  var timeout = opts.timeout || 10000;
-  //var timeout = ('number' === typeof opts) ? opts : opts.timeout || 10000;
+  var timeout = ('number' === typeof opts) ? opts : opts.timeout || 10000;
   var registry = ('string' === typeof opts) ? opts : opts.registry;
   assert('number', typeof timeout, 'timeout');
 
