@@ -6,6 +6,8 @@ var proxyquire = require('proxyquire');
 var fork = require('child_process').fork;
 var semver = require('semver');
 
+var REGISTRY = 'http://localhost:55550';
+
 describe('npm-whoami', function() {
   this.timeout(10000);
   var originalDirectory;
@@ -38,14 +40,14 @@ describe('npm-whoami', function() {
   }
 
   function opts(timeout) {
-    var o = {registry: 'http://localhost:55550'};
+    var o = {registry: REGISTRY};
     if (timeout) {
       o.timeout = timeout;
     }
     return o;
   }
 
-  it('jane.doe', function(done) {
+  it('jane.doe - registry url set in object', function(done) {
     setup('jane.doe');
     npmWhoami(opts(), function(err, result) {
       assert.ifError(err);
@@ -54,9 +56,9 @@ describe('npm-whoami', function() {
     });
   });
 
-  it('john.doe', function(done) {
+  it('john.doe - registry url set as string', function(done) {
     setup('john.doe');
-    npmWhoami(opts(), function(err, result) {
+    npmWhoami(REGISTRY, function(err, result) {
       assert.ifError(err);
       assert.equal(result, 'john.doe');
       done();
