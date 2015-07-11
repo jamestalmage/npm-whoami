@@ -39,9 +39,20 @@ Called with the npm username, or an error if it can not be found.
 Type: `string`  
 
 Will use the `--registry` flag to set an alternate registry url.
+       
+##### timeout
+
+*Optional*
+Type: `number`  
+
+Sets a maximum time to wait for a response from the server (in ms).
+Default is 10,000 ms.
 
 ```javascript
-npmWhoami({registry: 'http://localhost:55550'}, cb);
+npmWhoami({
+  registry: 'http://localhost:55550',
+  timeout: 4000
+}, cb);
 ```
 
 ## License

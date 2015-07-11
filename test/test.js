@@ -10,15 +10,16 @@ describe('npm-whoami', function() {
   var originalDirectory;
   var username;
   var server;
+  var handleResponse;
 
   var app = express();
 
-  app.get('/whoami', function(req, res) {
-    res.json({username:username});
+  app.get('/whoami', function(req, res, next) {
+    handleResponse(res, next);
   });
 
-  app.get('/-/whoami', function(req, res) {
-    res.json({username:username});
+  app.get('/-/whoami', function(req, res, next) {
+    handleResponse(res, next);
   });
 
   before(function(done) {
@@ -34,6 +35,10 @@ describe('npm-whoami', function() {
   beforeEach(function() {
     username = undefined;
     process.chdir(path.resolve(__dirname, 'fixture'));
+    handleResponse = function(res, next) {
+      res.json({username:username});
+      next();
+    };
   });
 
   it('jane.doe', function(done) {
@@ -66,6 +71,33 @@ describe('npm-whoami', function() {
       if (!err) {
         assert.fail('This test will fail if you are logged into npm: YOU ARE: '  + result);
       }
+      done();
+    });
+  });
+
+  it('long timeout - fails', function(done) {
+    handleResponse = function(res, next) {
+      setTimeout(function() {
+        res.json({username:'james.talmage'});
+        next();
+      }, 4000);
+    };
+    npmWhoami({timeout:3000, registry:'http://localhost:55550'}, function(err, result) {
+      assert(err);
+      done();
+    });
+  });
+
+  it('long timeout - passes', function(done) {
+    handleResponse = function(res, next) {
+      setTimeout(function() {
+        res.json({username:'james.talmage'});
+        next();
+      }, 4000);
+    };
+    npmWhoami({timeout:5500, registry:'http://localhost:55550'}, function(err, result) {
+      assert.ifError(err);
+      assert.equal('james.talmage', result);
       done();
     });
   });
