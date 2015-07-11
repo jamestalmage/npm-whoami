@@ -55,6 +55,13 @@ npmWhoami({
 }, cb);
 ```
 
+
+### npmWhoami.sync([options])
+
+Same available `options` as the async version.
+Returns a string username, or throws if the user is not logged in.
+This synchronous function is not available on `v0.10.x` or earlier.
+
 ## License
 
 MIT © [James Talmage](http://github.com/jamestalmage)
