@@ -204,6 +204,17 @@ describe('npm-whoami', function() {
         expect: 'failed'
       });
     });
+  } else {
+    it('throws on old versions of node', function() {
+      try {
+        npmWhoami.sync();
+      } catch (e) {
+        assert(/sync mode not supported/.test(e.message), 'bad message: ' + e.message);
+        return;
+      }
+      assert.fail('should have thrown');
+    });
+
   }
 
   // runs a test in a forked process.
